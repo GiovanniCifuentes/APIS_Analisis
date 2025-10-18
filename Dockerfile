@@ -1,27 +1,24 @@
-# Etapa 1: Compilación
+# Etapa 1: Construcción
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
-WORKDIR /app
+WORKDIR /src
 
-# Copia todo el contenido del proyecto
+# Copia el archivo .csproj y restaura dependencias
+COPY CRMVentasAPI/CRMVentasAPI.csproj CRMVentasAPI/
+RUN dotnet restore CRMVentasAPI/CRMVentasAPI.csproj
+
+# Copia el resto del código
 COPY . .
 
-# Restaura las dependencias
-RUN dotnet restore
-
-# Publica el proyecto en modo Release en la carpeta /out
-RUN dotnet publish -c Release -o out
+# Publica el proyecto en modo Release
+RUN dotnet publish CRMVentasAPI/CRMVentasAPI.csproj -c Release -o /app/out
 
 # Etapa 2: Ejecución
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
 WORKDIR /app
-
-# Copia el resultado de la compilación
 COPY --from=build /app/out .
 
-# Expone el puerto (Render usa 10000 internamente)
 ENV ASPNETCORE_URLS=http://0.0.0.0:10000
 EXPOSE 10000
 
-# Comando de inicio
 ENTRYPOINT ["dotnet", "CRMVentasAPI.dll"]
 
