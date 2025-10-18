@@ -1,0 +1,23 @@
+# Archivos temporales de Visual Studio
+.vs/
+bin/
+obj/
+*/bin/
+*/obj/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Archivos de dependencias
+node_modules/
+packages/
+
+# Publicaciones y artefactos
+/publish/
+/out/
+
+# Archivos del sistema
+.DS_Store
+Thumbs.db
+
