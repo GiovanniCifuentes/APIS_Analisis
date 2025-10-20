@@ -208,6 +208,40 @@ namespace CRMVentasAPI.Controllers
             return Ok(data);
         }
 
+        // GET api/Condiciones/historial-simplificado
+        [HttpGet("historial-simplificado")]
+        public async Task<ActionResult<IEnumerable<object>>> GetHistorialSimplificado()
+        {
+            try
+            {
+                var clientesExternos = await _externalApiService.GetClientesAsync();
+
+                // Corregimos las advertencias de nulabilidad
+                var descuentosPorCliente = await _context.DescuentosAplicados
+                    .Where(d => !string.IsNullOrEmpty(d.ClienteId))
+                    .GroupBy(d => d.ClienteId!)
+                    .Select(g => new
+                    {
+                        ClienteId = g.Key,
+                        CantidadDescuentos = g.Count()
+                    })
+                    .ToDictionaryAsync(g => g.ClienteId, g => g.CantidadDescuentos);
+
+                var resultado = clientesExternos.Select(c => new
+                {
+                    Id = c.Id,
+                    Nombre = c.ContactoId.Name,
+                    CantidadDescuentos = descuentosPorCliente.ContainsKey(c.Id) ? descuentosPorCliente[c.Id] : 0
+                }).ToList();
+
+                return Ok(resultado);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { mensaje = $"Error al obtener historial simplificado: {ex.Message}" });
+            }
+        }
+
         // POST api/Condiciones/aplicar
         [HttpPost("aplicar")]
         public async Task<IActionResult> AplicarDescuento([FromBody] AplicacionDescuentoDto dto)
