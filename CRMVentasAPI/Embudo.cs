@@ -1,4 +1,7 @@
-﻿namespace CRMVentasAPI.Models
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace CRMVentasAPI.Models
 {
     public class Embudo
     {

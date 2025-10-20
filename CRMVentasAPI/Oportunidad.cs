@@ -1,25 +1,28 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace CRMVentasAPI.Models
 {
     public class Oportunidad
     {
+        [Key]
         public int Id { get; set; }
-        public string Titulo { get; set; }
-        public string Etapa { get; set; }
-        public float ValorEstimado { get; set; }
+        public string Titulo { get; set; } = string.Empty;
+        public string Etapa { get; set; } = string.Empty;
+        public decimal ValorEstimado { get; set; }
         public DateTime FechaCierreProbable { get; set; }
-        public string Estado { get; set; }
+        public string Estado { get; set; } = "Abierta";
         public int ClienteId { get; set; }
-        public Cliente Cliente { get; set; }
 
-        public string Nombre { get; set; }
+        [ForeignKey("ClienteId")]
+        public Cliente? Cliente { get; set; }
 
-        // 🔧 Estas dos propiedades debes agregarlas para solucionar los errores
-        public DateTime FechaCreacion { get; set; }
-
+        public DateTime FechaCreacion { get; set; } = DateTime.UtcNow;
         public DateTime? FechaCierre { get; set; }
+        public string Vendedor { get; set; } = string.Empty;
 
-        public string Vendedor { get; set; }
+        // Propiedades de navegación
+        public ICollection<Tarea>? Tareas { get; set; }
+        public ICollection<Propuesta>? Propuestas { get; set; }
     }
 }

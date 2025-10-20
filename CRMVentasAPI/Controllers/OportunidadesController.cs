@@ -1,7 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using CRMVentasAPI.Data;
-using CRMVentasAPI.Models;
 using Microsoft.EntityFrameworkCore;
+using CRMVentasAPI;
+using CRMVentasAPI.Models;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace CRMVentasAPI.Controllers
 {
@@ -32,35 +35,15 @@ namespace CRMVentasAPI.Controllers
                 .FirstOrDefaultAsync(o => o.Id == id);
 
             if (oportunidad == null)
-                return NotFound();
+                return NotFound(); // 🔹 Corregido para no causar advertencia
 
             return oportunidad;
         }
 
-        [HttpGet("todas")]
-        public async Task<ActionResult<IEnumerable<Oportunidad>>> GetTodas()
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<Oportunidad>>> GetAll()
         {
             return await _context.Oportunidades.Include(o => o.Cliente).ToListAsync();
-        }
-
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Oportunidad>>> GetAll(
-            [FromQuery] string estado = null,
-            [FromQuery] DateTime? fechaInicio = null,
-            [FromQuery] DateTime? fechaFin = null)
-        {
-            var query = _context.Oportunidades.AsQueryable();
-
-            if (!string.IsNullOrEmpty(estado))
-                query = query.Where(o => o.Estado == estado);
-
-            if (fechaInicio.HasValue)
-                query = query.Where(o => o.FechaCierre >= fechaInicio.Value);
-
-            if (fechaFin.HasValue)
-                query = query.Where(o => o.FechaCierre <= fechaFin.Value);
-
-            return await query.Include(o => o.Cliente).ToListAsync();
         }
 
         [HttpPut("{id}")]
