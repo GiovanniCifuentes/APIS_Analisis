@@ -1,11 +1,11 @@
-﻿// Controllers/TareasController.cs
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using CRMVentasAPI;
 using CRMVentasAPI.Models;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 
 namespace CRMVentasAPI.Controllers
 {
@@ -14,10 +14,12 @@ namespace CRMVentasAPI.Controllers
     public class TareasController : ControllerBase
     {
         private readonly AppDbContext _context;
+        private readonly ILogger<TareasController> _logger;
 
-        public TareasController(AppDbContext context)
+        public TareasController(AppDbContext context, ILogger<TareasController> logger)
         {
             _context = context;
+            _logger = logger;
         }
 
         [HttpGet]
@@ -50,15 +52,61 @@ namespace CRMVentasAPI.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<Tarea>> CreateTarea(Tarea tarea)
+        public async Task<ActionResult<Tarea>> CreateTarea([FromBody] CreateTareaDto dto)
         {
-            // Validar que la oportunidad existe
-            var oportunidad = await _context.Oportunidades.FindAsync(tarea.OportunidadId);
+            // Validación DTO
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            // Validar que la oportunidad exista
+            var oportunidad = await _context.Oportunidades.FindAsync(dto.OportunidadId);
             if (oportunidad == null)
                 return BadRequest(new { mensaje = "La oportunidad especificada no existe" });
 
-            _context.Tareas.Add(tarea);
-            await _context.SaveChangesAsync();
+            // Parseo seguro de fecha (acepta null/empty)
+            DateTime? fechaVencimiento = null;
+            if (!string.IsNullOrWhiteSpace(dto.FechaVencimiento))
+            {
+                if (DateTime.TryParse(dto.FechaVencimiento, out var parsed))
+                    fechaVencimiento = parsed;
+                else
+                {
+                    // intentar parseo ISO explícito
+                    try
+                    {
+                        fechaVencimiento = System.Xml.XmlConvert.ToDateTime(dto.FechaVencimiento, System.Xml.XmlDateTimeSerializationMode.Utc);
+                    }
+                    catch
+                    {
+                        return BadRequest(new { mensaje = "Formato de FechaVencimiento inválido. Use ISO yyyy-MM-dd o una fecha válida." });
+                    }
+                }
+            }
+
+            var tarea = new Tarea
+            {
+                Titulo = dto.Titulo,
+                Descripcion = dto.Descripcion,
+                FechaVencimiento = fechaVencimiento,
+                Completada = dto.Completada,
+                OportunidadId = dto.OportunidadId
+            };
+
+            try
+            {
+                _context.Tareas.Add(tarea);
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateException dbEx)
+            {
+                _logger.LogError(dbEx, "Error guardando tarea en BD (CreateTarea)");
+                return StatusCode(500, new { mensaje = "Error guardando la tarea en la base de datos", detalle = dbEx.Message });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error inesperado en CreateTarea");
+                return StatusCode(500, new { mensaje = "Error inesperado al crear la tarea", detalle = ex.Message });
+            }
 
             return CreatedAtAction(nameof(GetTarea), new { id = tarea.Id }, tarea);
         }
