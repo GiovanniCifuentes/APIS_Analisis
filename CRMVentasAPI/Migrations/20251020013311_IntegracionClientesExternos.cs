@@ -7,31 +7,12 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace CRMVentasAPI.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialMySqlCreate : Migration
+    public partial class IntegracionClientesExternos : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AlterDatabase()
-                .Annotation("MySql:CharSet", "utf8mb4");
-
-            migrationBuilder.CreateTable(
-                name: "Clientes",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    Nombre = table.Column<string>(type: "longtext", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    Email = table.Column<string>(type: "longtext", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    Telefono = table.Column<string>(type: "longtext", nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4")
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Clientes", x => x.Id);
-                })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
@@ -73,7 +54,8 @@ namespace CRMVentasAPI.Migrations
                     FechaCierreProbable = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     Estado = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    ClienteId = table.Column<int>(type: "int", nullable: false),
+                    ClienteId = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
                     FechaCreacion = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     FechaCierre = table.Column<DateTime>(type: "datetime(6)", nullable: true),
                     Vendedor = table.Column<string>(type: "longtext", nullable: false)
@@ -82,12 +64,6 @@ namespace CRMVentasAPI.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Oportunidades", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Oportunidades_Clientes_ClienteId",
-                        column: x => x.ClienteId,
-                        principalTable: "Clientes",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -146,11 +122,6 @@ namespace CRMVentasAPI.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Oportunidades_ClienteId",
-                table: "Oportunidades",
-                column: "ClienteId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Propuestas_OportunidadId",
                 table: "Propuestas",
                 column: "OportunidadId");
@@ -175,9 +146,6 @@ namespace CRMVentasAPI.Migrations
 
             migrationBuilder.DropTable(
                 name: "Oportunidades");
-
-            migrationBuilder.DropTable(
-                name: "Clientes");
         }
     }
 }

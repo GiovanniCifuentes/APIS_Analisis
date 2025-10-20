@@ -1,11 +1,13 @@
+// Program.cs (ACTUALIZADO)
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using CRMVentasAPI;
-using CRMVentasAPI.Models;
+using CRMVentasAPI.Services;
+using System.Text.Json;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// --- INICIO: LÓGICA DE CONEXIÓN INTELIGENTE ---
+// --- CONEXIÓN INTELIGENTE ---
 string connectionString;
 if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("MYSQLHOST")))
 {
@@ -21,17 +23,33 @@ else
     connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
         ?? throw new InvalidOperationException("La cadena de conexión 'DefaultConnection' no fue encontrada.");
 }
-// --- FIN: LÓGICA DE CONEXIÓN INTELIGENTE ---
 
+// Configurar DbContext
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
 
-builder.Services.AddControllers();
+// 🔹 NUEVO: Configurar HttpClient para API externa
+builder.Services.AddHttpClient<IExternalApiService, ExternalApiService>();
+
+// Configurar controladores
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+        options.JsonSerializerOptions.WriteIndented = true;
+    });
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
-    c.SwaggerDoc("v1", new OpenApiInfo { Title = "CRM Ventas API", Version = "v1" });
+    c.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Title = "CRM Ventas API - Integrado con Gestión de Contactos",
+        Version = "v1",
+        Description = "API completa de CRM integrada con el sistema externo de gestión de contactos"
+    });
 });
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("PermitirTodo", policy =>
@@ -42,6 +60,7 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
+// Aplicar migraciones
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
@@ -57,14 +76,19 @@ using (var scope = app.Services.CreateScope())
     }
 }
 
-app.UseSwagger();
-app.UseSwaggerUI(c =>
+// Configurar pipeline
+if (app.Environment.IsDevelopment())
 {
-    c.SwaggerEndpoint("/swagger/v1/swagger.json", "CRM Ventas API V1");
-    c.RoutePrefix = string.Empty;
-});
+    app.UseSwagger();
+    app.UseSwaggerUI(c =>
+    {
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "CRM Ventas API V1");
+        c.RoutePrefix = string.Empty;
+    });
+}
 
 app.UseCors("PermitirTodo");
 app.UseAuthorization();
 app.MapControllers();
+
 app.Run();

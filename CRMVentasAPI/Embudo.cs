@@ -5,22 +5,24 @@ namespace CRMVentasAPI.Models
 {
     public class Embudo
     {
+        [Key]
         public int Id { get; set; }
-        public string Nombre { get; set; }
+        public string Nombre { get; set; } = string.Empty;
 
-        // Cambio: Etapas como lista en lugar de string
+        // Etapas como lista
         public List<string> Etapas { get; set; } = new List<string>();
 
         public double ValorEstimado { get; set; }
-        public string Estado { get; set; }
+        public string Estado { get; set; } = "Activo";
         public DateTime FechaCierreProbable { get; set; }
-        public DateTime FechaCreacion { get; set; }
-        public string Vendedor { get; set; }
+        public DateTime FechaCreacion { get; set; } = DateTime.UtcNow;
+        public string Vendedor { get; set; } = string.Empty;
 
-        // Nuevo: Probabilidad de cierre (0-100%)
+        // Probabilidad de cierre (0-100%)
         public int ProbabilidadCierre { get; set; } = 50;
 
-        // Nuevo: Valor previsto calculado
+        // Valor previsto calculado
+        [NotMapped]
         public double ValorPrevisto => ValorEstimado * (ProbabilidadCierre / 100.0);
     }
 }

@@ -12,10 +12,17 @@ namespace CRMVentasAPI.Models
         public decimal ValorEstimado { get; set; }
         public DateTime FechaCierreProbable { get; set; }
         public string Estado { get; set; } = "Abierta";
-        public int ClienteId { get; set; }
 
-        [ForeignKey("ClienteId")]
-        public Cliente? Cliente { get; set; }
+        // 🔹 CAMBIO: Ahora es string para coincidir con la API externa
+        public string ClienteId { get; set; } = string.Empty;
+
+        // 🔹 NUEVO: Datos del cliente para mostrar (no se guardan en DB)
+        [NotMapped]
+        public string ClienteNombre { get; set; } = string.Empty;
+        [NotMapped]
+        public string ClienteEmail { get; set; } = string.Empty;
+        [NotMapped]
+        public string ClienteTelefono { get; set; } = string.Empty;
 
         public DateTime FechaCreacion { get; set; } = DateTime.UtcNow;
         public DateTime? FechaCierre { get; set; }

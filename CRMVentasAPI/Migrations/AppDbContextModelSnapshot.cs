@@ -22,30 +22,6 @@ namespace CRMVentasAPI.Migrations
 
             MySqlModelBuilderExtensions.AutoIncrementColumns(modelBuilder);
 
-            modelBuilder.Entity("CRMVentasAPI.Models.Cliente", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("Nombre")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("Telefono")
-                        .HasColumnType("longtext");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Clientes");
-                });
-
             modelBuilder.Entity("CRMVentasAPI.Models.Embudo", b =>
                 {
                     b.Property<int>("Id")
@@ -95,8 +71,9 @@ namespace CRMVentasAPI.Migrations
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("ClienteId")
-                        .HasColumnType("int");
+                    b.Property<string>("ClienteId")
+                        .IsRequired()
+                        .HasColumnType("longtext");
 
                     b.Property<string>("Estado")
                         .IsRequired()
@@ -127,8 +104,6 @@ namespace CRMVentasAPI.Migrations
                         .HasColumnType("longtext");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("ClienteId");
 
                     b.ToTable("Oportunidades");
                 });
@@ -197,17 +172,6 @@ namespace CRMVentasAPI.Migrations
                     b.HasIndex("OportunidadId");
 
                     b.ToTable("Tareas");
-                });
-
-            modelBuilder.Entity("CRMVentasAPI.Models.Oportunidad", b =>
-                {
-                    b.HasOne("CRMVentasAPI.Models.Cliente", "Cliente")
-                        .WithMany()
-                        .HasForeignKey("ClienteId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Cliente");
                 });
 
             modelBuilder.Entity("CRMVentasAPI.Models.Propuesta", b =>
