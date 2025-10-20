@@ -254,7 +254,7 @@ namespace CRMVentasAPI.Migrations
                     b.Property<string>("Descripcion")
                         .HasColumnType("longtext");
 
-                    b.Property<DateTime>("FechaVencimiento")
+                    b.Property<DateTime?>("FechaVencimiento")
                         .HasColumnType("datetime(6)");
 
                     b.Property<int>("OportunidadId")

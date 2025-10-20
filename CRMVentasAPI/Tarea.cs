@@ -9,7 +9,7 @@ namespace CRMVentasAPI.Models
         public int Id { get; set; }
         public string Titulo { get; set; } = string.Empty;
         public string? Descripcion { get; set; }
-        public DateTime FechaVencimiento { get; set; }
+        public DateTime? FechaVencimiento { get; set; } // <-- Cambiado a nullable
         public bool Completada { get; set; } = false;
         public int OportunidadId { get; set; }
 
@@ -17,6 +17,5 @@ namespace CRMVentasAPI.Models
         public Oportunidad? Oportunidad { get; set; }
     }
 }
-
 
 
