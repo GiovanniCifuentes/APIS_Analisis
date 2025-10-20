@@ -77,15 +77,14 @@ using (var scope = app.Services.CreateScope())
 }
 
 // Configurar pipeline
-if (app.Environment.IsDevelopment())
+app.UseSwagger();
+app.UseSwaggerUI(c =>
 {
-    app.UseSwagger();
-    app.UseSwaggerUI(c =>
-    {
-        c.SwaggerEndpoint("/swagger/v1/swagger.json", "CRM Ventas API V1");
-        c.RoutePrefix = string.Empty;
-    });
-}
+    // Esta línea le dice a Swagger dónde encontrar la definición de la API
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "CRM Ventas API V1");
+    // Esta línea hace que la página de Swagger sea la página de inicio de tu URL
+    c.RoutePrefix = string.Empty;
+});
 
 app.UseCors("PermitirTodo");
 app.UseAuthorization();
