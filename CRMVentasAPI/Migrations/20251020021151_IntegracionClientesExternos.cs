@@ -16,6 +16,61 @@ namespace CRMVentasAPI.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
+                name: "CondicionesComerciales",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    ClienteId = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    OportunidadId = table.Column<int>(type: "int", nullable: true),
+                    PrecioEspecial = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
+                    DescuentoPorcentual = table.Column<double>(type: "double", nullable: false),
+                    FechaInicio = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    FechaFin = table.Column<DateTime>(type: "datetime(6)", nullable: true),
+                    Activa = table.Column<bool>(type: "tinyint(1)", nullable: false),
+                    UsuarioCreacion = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    FechaCreacion = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    UsuarioUltimaActualizacion = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    UltimaActualizacion = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    Notas = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CondicionesComerciales", x => x.Id);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "DescuentosAplicados",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    ClienteId = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    OportunidadId = table.Column<int>(type: "int", nullable: true),
+                    PropuestaId = table.Column<int>(type: "int", nullable: true),
+                    CondicionComercialId = table.Column<int>(type: "int", nullable: true),
+                    PrecioOriginal = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    DescuentoPorcentual = table.Column<double>(type: "double", nullable: false),
+                    PrecioFinal = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    UsuarioAplicacion = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    FechaAplicacion = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    Comentarios = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_DescuentosAplicados", x => x.Id);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
                 name: "Embudos",
                 columns: table => new
                 {
@@ -135,6 +190,12 @@ namespace CRMVentasAPI.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "CondicionesComerciales");
+
+            migrationBuilder.DropTable(
+                name: "DescuentosAplicados");
+
             migrationBuilder.DropTable(
                 name: "Embudos");
 

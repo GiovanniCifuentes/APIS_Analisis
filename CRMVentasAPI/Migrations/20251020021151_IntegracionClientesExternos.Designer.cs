@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CRMVentasAPI.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20251020013311_IntegracionClientesExternos")]
+    [Migration("20251020021151_IntegracionClientesExternos")]
     partial class IntegracionClientesExternos
     {
         /// <inheritdoc />
@@ -24,6 +24,103 @@ namespace CRMVentasAPI.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
             MySqlModelBuilderExtensions.AutoIncrementColumns(modelBuilder);
+
+            modelBuilder.Entity("CRMVentasAPI.Models.CondicionComercial", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("Activa")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<string>("ClienteId")
+                        .HasColumnType("longtext");
+
+                    b.Property<double>("DescuentoPorcentual")
+                        .HasColumnType("double");
+
+                    b.Property<DateTime>("FechaCreacion")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<DateTime?>("FechaFin")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<DateTime>("FechaInicio")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("Notas")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<int?>("OportunidadId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal?>("PrecioEspecial")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<DateTime>("UltimaActualizacion")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("UsuarioCreacion")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("UsuarioUltimaActualizacion")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("CondicionesComerciales");
+                });
+
+            modelBuilder.Entity("CRMVentasAPI.Models.DescuentoAplicado", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ClienteId")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Comentarios")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<int?>("CondicionComercialId")
+                        .HasColumnType("int");
+
+                    b.Property<double>("DescuentoPorcentual")
+                        .HasColumnType("double");
+
+                    b.Property<DateTime>("FechaAplicacion")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<int?>("OportunidadId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("PrecioFinal")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("PrecioOriginal")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int?>("PropuestaId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UsuarioAplicacion")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("DescuentosAplicados");
+                });
 
             modelBuilder.Entity("CRMVentasAPI.Models.Embudo", b =>
                 {
