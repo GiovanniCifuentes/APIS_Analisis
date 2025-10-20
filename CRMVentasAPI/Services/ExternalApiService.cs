@@ -53,7 +53,7 @@ namespace CRMVentasAPI.Services
         {
             var token = await GetTokenAsync();
 
-            var request = new HttpRequestMessage(HttpMethod.Get, "/api/Cliente");
+            var request = new HttpRequestMessage(HttpMethod.Get, "/api/Cliente/Ventas");
             request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
             var response = await _httpClient.SendAsync(request);
