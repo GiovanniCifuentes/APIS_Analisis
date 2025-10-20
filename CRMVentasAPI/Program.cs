@@ -29,7 +29,11 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
 
 // 🔹 NUEVO: Configurar HttpClient para API externa
-builder.Services.AddHttpClient<IExternalApiService, ExternalApiService>();
+builder.Services.AddHttpClient<IExternalApiService, ExternalApiService>(client =>
+{
+    // Aumenta el timeout a 5 minutos (300 segundos)
+    client.Timeout = TimeSpan.FromSeconds(300);
+});
 
 // Configurar controladores
 builder.Services.AddControllers()
