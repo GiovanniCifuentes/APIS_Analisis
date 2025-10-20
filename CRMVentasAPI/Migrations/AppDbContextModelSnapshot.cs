@@ -257,7 +257,7 @@ namespace CRMVentasAPI.Migrations
                     b.Property<DateTime?>("FechaVencimiento")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<int>("OportunidadId")
+                    b.Property<int?>("OportunidadId")
                         .HasColumnType("int");
 
                     b.Property<string>("Titulo")
@@ -286,9 +286,7 @@ namespace CRMVentasAPI.Migrations
                 {
                     b.HasOne("CRMVentasAPI.Models.Oportunidad", "Oportunidad")
                         .WithMany("Tareas")
-                        .HasForeignKey("OportunidadId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("OportunidadId");
 
                     b.Navigation("Oportunidad");
                 });

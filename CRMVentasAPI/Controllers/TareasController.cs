@@ -58,12 +58,21 @@ namespace CRMVentasAPI.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            // Validar que la oportunidad exista
-            var oportunidad = await _context.Oportunidades.FindAsync(dto.OportunidadId);
-            if (oportunidad == null)
-                return BadRequest(new { mensaje = "La oportunidad especificada no existe" });
+            // ✅ Validación robusta de la oportunidad
+            if (dto.OportunidadId != 0)
+            {
+                var oportunidadExiste = await _context.Oportunidades
+                    .AnyAsync(o => o.Id == dto.OportunidadId);
 
-            // Parseo seguro de fecha (acepta null/empty)
+                if (!oportunidadExiste)
+                    return BadRequest(new { mensaje = $"La oportunidad con ID {dto.OportunidadId} no existe." });
+            }
+            else
+            {
+                return BadRequest(new { mensaje = "Debe especificar un ID de oportunidad válido." });
+            }
+
+            // ✅ Parseo seguro de fecha (acepta null/empty)
             DateTime? fechaVencimiento = null;
             if (!string.IsNullOrWhiteSpace(dto.FechaVencimiento))
             {
@@ -74,7 +83,10 @@ namespace CRMVentasAPI.Controllers
                     // intentar parseo ISO explícito
                     try
                     {
-                        fechaVencimiento = System.Xml.XmlConvert.ToDateTime(dto.FechaVencimiento, System.Xml.XmlDateTimeSerializationMode.Utc);
+                        fechaVencimiento = System.Xml.XmlConvert.ToDateTime(
+                            dto.FechaVencimiento,
+                            System.Xml.XmlDateTimeSerializationMode.Utc
+                        );
                     }
                     catch
                     {
@@ -83,6 +95,7 @@ namespace CRMVentasAPI.Controllers
                 }
             }
 
+            // ✅ Crear nueva tarea
             var tarea = new Tarea
             {
                 Titulo = dto.Titulo,

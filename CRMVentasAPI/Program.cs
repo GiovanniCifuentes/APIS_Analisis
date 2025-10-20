@@ -72,7 +72,7 @@ using (var scope = app.Services.CreateScope())
     catch (Exception ex)
     {
         var logger = services.GetRequiredService<ILogger<Program>>();
-        logger.LogError(ex, "Ocurrió un error al aplicar las migraciones de la base de datos.");
+        logger.LogError(ex, "❌ Error aplicando migraciones o inicializando la BD: {Mensaje}", ex.Message);
     }
 }
 
